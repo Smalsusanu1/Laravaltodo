@@ -1,28 +1,30 @@
-# Use official PHP image with FPM (FastCGI Process Manager)
-FROM php:8.1-fpm
+# Use official PHP image with FPM
+FROM php:8.2-fpm
 
-# Install system dependencies and PHP extensions
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
     libpq-dev \
-    && docker-php-ext-install pdo pdo_pgsql
+    git \
+    unzip \
+    && docker-php-ext-install pdo_pgsql
+
+# Install Composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 # Set working directory
 WORKDIR /var/www
 
-# Install Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+# Copy project files
+COPY . .
 
-# Copy application files
-COPY . /var/www
-
-# Install Composer dependencies
+# Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader
 
 # Set permissions
 RUN chown -R www-data:www-data /var/www
 
-# Expose port 9000 (FPM default)
-EXPOSE 9000
+# Expose port
+EXPOSE 8000
 
 # Start PHP-FPM
 CMD ["php-fpm"]
