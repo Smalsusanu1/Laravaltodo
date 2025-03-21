@@ -1,5 +1,5 @@
-# Use official PHP image with FPM
-FROM php:8.2-fpm
+# Use official PHP image with CLI
+FROM php:8.2-cli
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
@@ -22,9 +22,10 @@ RUN composer install --no-dev --optimize-autoloader
 
 # Set permissions
 RUN chown -R www-data:www-data /var/www
+RUN chmod -R 755 /var/www/storage
 
-# Expose port
+# Expose port 8000
 EXPOSE 8000
 
-# Start PHP-FPM
-CMD ["php-fpm"]
+# Start Laravel server
+CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
