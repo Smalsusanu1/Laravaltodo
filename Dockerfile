@@ -20,9 +20,10 @@ COPY . .
 # Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader
 
-# Set permissions
+# Create storage directory and set permissions
+RUN mkdir -p /var/www/storage /var/www/bootstrap/cache
 RUN chown -R www-data:www-data /var/www
-RUN chmod -R 755 /var/www/storage
+RUN chmod -R 755 /var/www/storage /var/www/bootstrap/cache
 
 # Expose port 8000
 EXPOSE 8000
